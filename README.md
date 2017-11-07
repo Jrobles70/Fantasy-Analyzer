@@ -1,5 +1,5 @@
 # Fantasy Football Flask
-Simple webpage that prints out memos in a Mongo Database. User can add new memos or delete old ones.
+Flask webpage that can compare fantasy football stats and recommend players to start
 
 # Author
 * Justin Robles - Jrobles@uoregon.edu
