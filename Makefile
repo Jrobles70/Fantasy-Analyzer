@@ -8,14 +8,12 @@ env:
 
 install:  env  credentials
 
-credentials:  memos/credentials.ini
-memos/credentials.ini:
-	echo "You just install the database and credentials.ini for it"
+credentials:  credentials.py
 
-run:	env credentials
+run:	env
 	$(INVENV) cd memos; python3 flask_main.py
 
-trial:	env credentials
+trial:	env
 	$(INVENV) cd memos; python3 db_trial.py
 
 test:	env
@@ -32,6 +30,8 @@ veryclean:
 	make clean
 	rm -rf env
 
+update:
+	python3 setupMake.py
 
-
-
+server:
+	./cloud_sql_proxy -instances="fantasyfootballanalyzer-185320:us-central1:fantasyfootball"=tcp:3306
