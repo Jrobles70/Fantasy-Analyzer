@@ -33,5 +33,8 @@ veryclean:
 update:
 	python3 setupMake.py
 
-server:
+tcp:
 	./cloud_sql_proxy -instances="fantasyfootballanalyzer-185320:us-central1:fantasyfootball"=tcp:3306
+
+unix:
+	./cloud_sql_proxy -instances="fantasyfootballanalyzer-185320:us-central1:fantasyfootball" -dir=/cloudsql &
