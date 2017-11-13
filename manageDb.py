@@ -9,7 +9,8 @@ class DbManager:
                                       db=CLOUDSQL_DATABASE,
                                       user=CLOUDSQL_USER,
                                       passwd=CLOUDSQL_PASSWORD,
-                                      charset='utf8')
+                                      charset='utf8',
+                                      port=3307)
         except Exception as e:
             print('Something went wrong connecting to Database')
             print(e)
@@ -63,7 +64,7 @@ class DbManager:
                 ("Houstan Texans", "HOU"),
                 ("Los Angeles Rams", "LA"),
                 ("Dallas Cowboys", "DAL"),
-                ("New York Giants", "HYG"),
+                ("New York Giants", "NYG"),
                 ("San Francisco 49ers", "SF"),
                 ("New England Patriots", "NE"),
                 ("Denver Broncos", "Den"),

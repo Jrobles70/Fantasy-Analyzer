@@ -1,6 +1,7 @@
 from selenium import webdriver
 from time import sleep
 from manageDb import DbManager
+from selenium.common.exceptions import NoSuchElementException
 
 class NFlCrawler(DbManager):
     def __init__(self):
@@ -8,53 +9,47 @@ class NFlCrawler(DbManager):
         # Connects to a website that generates random sentences
         self.driver = webdriver.PhantomJS("./phantomjs")
 
-    def getInfo(self):
+    def setUp(self):
         '''
-        list of elements holds tables which are in the following order:
-        class=data-table1
-        1: Qbs
-        2: Rbs
-        3: Wrs
-        4: Kickers
-        6: Punt Return
-        7: Kick Return
+        This is another function that will only be used once. I need this to add all players initially and
+        get all information up to this date.
         '''
-        print 'Getting teams'
         teams = self.readTeams()
-        print 'Got teams'
         for team, abbr, ID in teams:
-            print 'Starting'
+            print team
+            print "-" * len(team)
             team = team.replace(" ", "")
             self.driver.get('http://www.nfl.com/teams/{}/statistics?team={}'.format(team, abbr))
-            data_els = self.driver.find_elements_by_class_name('data-table1')
-            self.getQbStats(data_els)
-            self.getRbStats(data_els)
-            self.getWrStats(data_els)
-            self.getKickerStats(data_els)
-            self.getDstStats(data_els)
+            self.getPlayers()
 
-    def getQbStats(self, elementList):
+    def getPlayers(self):
         # elementList[1] is all passing stats
-        # element.findElement(By.xpath("./*"));
-        pass
+        # //*[@id="team-stats-wrapper"]/table[2]/tbody/tr[3]/td[1], //*[@id="team-stats-wrapper"]/table[2]/tbody/tr[4]/td[1]
+        elements_order = {
+                          "PASSING STATS": 2,
+                          "RUSHING STATS": 3,
+                          "RECEIVING STATS": 4,
+                          "FIELD GOAL STATS": 5,
+                          "PUNT RETURN": 6,
+                          "KICKOFF RETURN": 7
+                          }
+        for position in elements_order:
+            print position
+            print "-" * len(position)
+            nextPlayer = True
+            i = 3
+            while nextPlayer:
+                try:
+                    player = self.driver.find_element_by_xpath('//*[@id="team-stats-wrapper"]/table[{}]/tbody/tr[{}]/td[1]/a'
+                                                               .format(elements_order[position], i)).get_attribute("href")
+                    print player
+                    i += 1
 
-    def getRbStats(self, elementList):
-        # elementList[2] is all rushing stats
-        pass
+                except NoSuchElementException:
+                    # This is when there is no next player
+                    nextPlayer = False
 
-    def getWrStats(self, elementList):
-        # elementList[3] is all Receiving stats
-        pass
-
-    def getKickerStats(self, elementList):
-        # elementList[4] is all field goal stats
-        pass
-
-    def getDstStats(self, elementList):
-        # 6 and 7 are punt/kickoff return stats
-        # I do not need to get all defensive stats because I will record all teams weekly offensive stats
-        # therefore a teams offensive stats are the other teams defensive allowed
-        pass
+            print "---------------------------------------------------------------"
 
 
     def finish(self):
@@ -63,5 +58,5 @@ class NFlCrawler(DbManager):
 
 if __name__ == "__main__":
     test = NFlCrawler()
-    test.getInfo()
+    test.setUp()
 
