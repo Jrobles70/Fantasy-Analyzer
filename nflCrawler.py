@@ -34,18 +34,26 @@ class NFlCrawler(DbManager):
             self.getDstStats(data_els)
 
     def getQbStats(self, elementList):
+        # elementList[1] is all passing stats
+        # element.findElement(By.xpath("./*"));
         pass
 
     def getRbStats(self, elementList):
+        # elementList[2] is all rushing stats
         pass
 
     def getWrStats(self, elementList):
+        # elementList[3] is all Receiving stats
         pass
 
     def getKickerStats(self, elementList):
+        # elementList[4] is all field goal stats
         pass
 
     def getDstStats(self, elementList):
+        # 6 and 7 are punt/kickoff return stats
+        # I do not need to get all defensive stats because I will record all teams weekly offensive stats
+        # therefore a teams offensive stats are the other teams defensive allowed
         pass
 
 
