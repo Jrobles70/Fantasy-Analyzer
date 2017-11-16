@@ -75,13 +75,113 @@ class DbManager:
                 ("Oakland Raiders", "OAK"),
                 ("Philadelphia Eagles", "PHI"),
                 ]
-        self.c.execute("CREATE TABLE IF NOT EXISTS Teams(teamName TEXT, abbr TEXT, teamID INTEGER PRIMARY KEY)")
+        self.c.execute("CREATE TABLE IF NOT EXISTS Teams(teamName TEXT, abbr TEXT, teamId INTEGER PRIMARY KEY)")
+        #self.c.execute("CREATE TABLE IF NOT EXISTS Kickers("
+        #               "nameId INTEGER FOREIGN KEY, "
+        #               "week TEXT, "
+        #               "blocked TEXT, "
+        #               "fgAtt TEXT, "
+        #               "fgMade TEXT, "
+        #               "xpMade TEXT, "
+        #               "xpAtt TEXT, "
+        #               "1to19 TEXT, "
+        #               "20to29 TEXT, "
+        #               "30to39 TEXT, "
+        #               "40to49 TEXT, "
+        #               "over50 TEXT)")
+
+        self.c.execute("CREATE TABLE IF NOT EXISTS Rush/Rec("
+                       "nameId INTEGER FOREIGN KEY, "
+                       "week TEXT, "
+                       "rushAtt TEXT, "
+                       "rushYrds TEXT, "
+                       "rushTds TEXT, "
+                       "targets TEXT, "
+                       "rec TEXT, "
+                       "recYrds TEXT, "
+                       "recTds Text, "
+                       "Fum TEXT, "
+                       "FumLost TEXT"
+                       ")")
+
+        self.c.execute("CREATE TABLE IF NOT EXISTS Pass("
+        "passAtt TEXT, "
+        "passCom TEXT, "
+        "passYrds TEXT, "
+        "passTds TEXT, "
+        "ints TEXT, "
+        "sacks TEXT, "
+        "Fum TEXT, "
+        "FumLost TEXT)")
+
+        #self.c.execute("CREATE TABLE IF NOT EXISTS Off(teamId INTEGER FOREIGN KEY, )")
+
+        self.c.execute("CREATE TABLE IF NOT EXISTS Players(name TEXT, "
+                       "teamId INTEGER FOREIGN KEY, "
+                       "nameId INTEGER PRIMARY KEY, "
+                       "depth TEXT)")
+
+        self.c.execute("CREATE TABLE IF NOT EXISTS Schedule("
+                       "teamId INTEGER FOREIGN KEY, "
+                       "week1 TEXT, "
+                       "week2 TEXT, "
+                       "week3 TEXT, "
+                       "week4 TEXT, "
+                       "week5 TEXT, "
+                       "week6 TEXT, "
+                       "week7 TEXT, "
+                       "week8 TEXT, "
+                       "week9 TEXT, "
+                       "week10 TEXT, "
+                       "week11 TEXT, "
+                       "week12 TEXT, "
+                       "week13 TEXT, "
+                       "week14 TEXT, "
+                       "week15 TEXT, "
+                       "week16 TEXT, "
+                       "week17 TEXT "
+                       ")")
+        # TODO: self.c.execute("CREATE TABLE IF NOT EXISTS Weather()")
+
+
         ID = 0
         for teamName, abbr in teams:
             print 'adding {}'.format(teamName)
             self.c.execute("INSERT INTO Teams VALUES('{}','{}',{})".format(teamName, abbr, ID))
             ID += 1
         self.closeCursor()
+
+    def addNew(self, name, numPos, stats, teadId):
+        '''
+        All stats include all players who have those stats along with others. For example, the rushing section has all
+        players with rushing attempts as well as receiving (or passing if they are a qb) so I will have to check if
+        the player has been added for their sections already.
+        ie, If a Qb is entered then if we come across them again it will have to be under receiving yards
+            If a Rb/Wr is entered then if we come across them again it will have to be under passing yards
+        :param name:
+        :param numPos:
+        :param stats:
+        :param teadId:
+        :return:
+        '''
+        self.createCursor()
+        self.c.execute("Select name FROM Players")
+        players = self.c.fetchall()
+        if name in players:
+            print('not ready for this yet. Skipping...')
+            return
+
+        self.c.execute("INSERT INTO PLAYERS({}, {}, {} '--')".format(name, teamId, len(players)))
+
+        if 'QB' in numPos:
+            #TODO: add conditional to check if new stats are going to be entered if player is in db already
+            pass
+        else:
+            # Else enter than as normal
+            pass
+
+        self.closeCursor()
+
 
     def readTeams(self):
         self.createCursor()
