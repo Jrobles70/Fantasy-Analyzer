@@ -20,9 +20,10 @@ class NFlCrawler(DbManager):
             print "-" * len(team)
             team = team.replace(" ", "")
             self.driver.get('http://www.nfl.com/teams/{}/statistics?team={}'.format(team, abbr))
-            self.getPlayers()
+            self.driver.set_window_size(1400, 1000)
+            self.getPlayers(team, abbr)
 
-    def getPlayers(self):
+    def getPlayers(self, team, abbr):
         # elementList[1] is all passing stats
         # //*[@id="team-stats-wrapper"]/table[2]/tbody/tr[3]/td[1], //*[@id="team-stats-wrapper"]/table[2]/tbody/tr[4]/td[1]
         elements_order = {
@@ -41,13 +42,28 @@ class NFlCrawler(DbManager):
             while nextPlayer:
                 try:
                     player = self.driver.find_element_by_xpath('//*[@id="team-stats-wrapper"]/table[{}]/tbody/tr[{}]/td[1]/a'
-                                                               .format(elements_order[position], i)).get_attribute("href")
-                    print player
-                    i += 1
+                                                               .format(elements_order[position], i)).click()
+                    self.driver.get(self.driver.current_url[:-7] + 'gamelogs')
 
+                    name = self.driver.find_element_by_xpath('//*[@id="player-bio"]/div[2]/p[1]/span[1]').get_attribute('innerText')
+                    numPos = self.driver.find_element_by_xpath('//*[@id="player-bio"]/div[2]/p[1]/span[2]').get_attribute('innerText')
+
+                    print name, numPos
+
+                    seasonStats = self.driver.find_elements_by_class_name("data-table1")[1]
+                    children = seasonStats.find_elements_by_tag_name("tr")
+
+                    for row in children:
+                        print row.get_attribute("innerText")
+
+                    i += 1
+                    self.driver.get('http://www.nfl.com/teams/{}/statistics?team={}'.format(team, abbr))
                 except NoSuchElementException:
                     # This is when there is no next player
                     nextPlayer = False
+
+                except IndexError:
+                    continue
 
             print "---------------------------------------------------------------"
 
